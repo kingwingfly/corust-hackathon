@@ -50,19 +50,21 @@ where
 
 /// Let `cargo check -F err`:
 /// ```
-///error[E0119]: conflicting implementations of trait `Borrow` for type `(_, _)`
-///   --> src/lib.rs:61:1
+///error[E0119]: conflicting implementations of trait `Borrow<'_>` for type `(_, _)`
+///   --> impl_trait_for_tuple/src/lib.rs:70:1
 ///    |
-/// 36 | / impl<T> Borrow for T
-/// 37 | | where
-/// 38 | |     for<'a> T: 'a,
-///    | |__________________- first implementation here
+/// 40 | / impl<'a, T> Borrow<'a> for T
+/// 41 | | where
+/// 42 | |     T: 'a,
+///    | |__________- first implementation here
 /// ...
-/// 61 | / impl<T1, T2> Borrow for (T1, T2)
-/// 62 | | where
-/// 63 | |     for<'a> T1: 'a,
-/// 64 | |     for<'a> T2: 'a,
-///    | |___________________^ conflicting implementation for `(_, _)`
+/// 70 | / impl<'a, T1, T2> Borrow<'a> for (T1, T2)
+/// 71 | | where
+/// 72 | |     T1: 'a,
+/// 73 | |     T2: 'a,
+///    | |___________^ conflicting implementation for `(_, _)`
+///
+/// For more information about this error, try `rustc --explain E0119`.
 /// ```
 /// This is due to that we have implemented Borrow for T,
 /// which can be solved as (T1, T2), so it is duplicated.

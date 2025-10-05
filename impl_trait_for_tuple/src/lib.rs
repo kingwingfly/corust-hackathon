@@ -29,22 +29,22 @@ fn test1() {
 /// which can not only borrow T as &T, but also can borrow (T1, T2, ...) as (&T1, &T2, ...).
 ///
 /// p.s this is just an example, `&(T1, T2)` can be borrowed as `(&T1, &T2)` through pat-match.
-trait Borrow {
-    type Ref<'a>;
+trait Borrow<'a> {
+    type Ref;
 
-    fn borrow<'a>(&self) -> Self::Ref<'a>;
+    fn borrow(&'a self) -> Self::Ref;
 }
 
 /// This is easy, but we notice that T can be (usize, isize), i.e. we will borrow (usize, isize) as &(usize, isize),
 /// it's probably not what we want.
-impl<T> Borrow for T
+impl<'a, T> Borrow<'a> for T
 where
-    for<'a> T: 'a,
+    T: 'a,
 {
-    type Ref<'a> = &'a T;
+    type Ref = &'a T;
 
-    fn borrow<'a>(&self) -> Self::Ref<'a> {
-        todo!()
+    fn borrow(&'a self) -> Self::Ref {
+        self
     }
 }
 
@@ -67,35 +67,35 @@ where
 /// This is due to that we have implemented Borrow for T,
 /// which can be solved as (T1, T2), so it is duplicated.
 #[cfg(feature = "err")]
-impl<T1, T2> Borrow for (T1, T2)
+impl<'a, T1, T2> Borrow<'a> for (T1, T2)
 where
-    for<'a> T1: 'a,
-    for<'a> T2: 'a,
+    T1: 'a,
+    T2: 'a,
 {
-    type Ref<'a> = (&'a T1, &'a T2);
+    type Ref = (&'a T1, &'a T2);
 
-    fn borrow(&self) -> Self::Ref<'_> {
-        todo!()
+    fn borrow(&'a self) -> Self::Ref {
+        (&self.0, &self.1)
     }
 }
 
 /// Let's defined Baz to solve this issue
-trait Baz<M /*M is short for Marker*/> {
-    type Ref<'a>;
+trait Baz<'a, M /*M is short for Marker*/> {
+    type Ref;
 
     // `1` to differ with trait `Bar`.
-    fn borrow1<'a>(&self) -> Self::Ref<'a>;
+    fn borrow1(&'a self) -> Self::Ref;
 }
 
 /// impl `Baz<()>` for all `T`s first
-impl<T> Baz<()> for T
+impl<'a, T> Baz<'a, ()> for T
 where
-    for<'a> T: 'a,
+    T: 'a,
 {
-    type Ref<'a> = &'a T;
+    type Ref = &'a T;
 
-    fn borrow1<'a>(&self) -> Self::Ref<'a> {
-        todo!()
+    fn borrow1(&'a self) -> Self::Ref {
+        self
     }
 }
 
@@ -105,21 +105,23 @@ where
 ///
 /// ps: It is `((),)` considered as tuple, while `(())` is considered the same as `()`.
 /// So, we use `((),)` here to diff with `()`.
-impl<T1, T2> Baz<((),)> for (T1, T2)
+#[cfg(not(feature = "variadics_please"))]
+impl<'a, T0, T1> Baz<'a, ((),)> for (T0, T1)
 where
-    for<'a> T1: 'a,
-    for<'a> T2: 'a,
+    T0: Baz<'a, ()>,
+    T1: Baz<'a, ()>,
 {
-    type Ref<'a> = (&'a T1, &'a T2);
+    type Ref = (T0::Ref, T1::Ref);
 
-    fn borrow1<'a>(&self) -> Self::Ref<'a> {
-        todo!()
+    fn borrow1(&'a self) -> Self::Ref {
+        (self.0.borrow1(), self.1.borrow1())
     }
 }
 
+#[cfg(not(feature = "variadics_please"))]
 #[test]
 fn test2() {
-    fn check<T: Baz<M>, M>() {}
+    fn check<'a, T: Baz<'a, M>, M>() {}
     check::<usize, _>();
     check::<isize, _>();
     // Here, M cannot be inferred, due to `Baz<()>` and `Baz<(),>` are both implemented for (usize, isize),
@@ -136,14 +138,16 @@ fn test2() {
 macro_rules! impl_baz {
     ($($i: literal),* $(,)?) => {
         paste::paste! {
-            impl<$([<T $i>]),*> Baz<((),)> for ($([<T $i>]),*,)
+            impl<'a, $([<T $i>]),*> Baz<'a, ((),)> for ($([<T $i>]),*,)
             where
-                $(for<'a> [<T $i>]: 'a),*
+                $([<T $i>]: Baz<'a, ()>),*
             {
-                type Ref<'a> = ($(&'a[<T $i>]),*,);
+                type Ref = ($([<T $i>]::Ref),*,);
 
-                fn borrow1<'a>(&self) -> Self::Ref<'a> {
-                    todo!()
+                fn borrow1(&'a self) -> Self::Ref {
+                    (
+                        $(self.$i.borrow1()),*,
+                    )
                 }
             }
         }
@@ -170,15 +174,17 @@ impl_baz!(0, 1, 2, 3, 4);
 /// let's try it!
 #[cfg(feature = "variadics_please")]
 macro_rules! impl_baz2 {
-    ($($t: ident),* $(,)?) => {
-        impl<$($t),*> Baz<((),)> for ($($t),*,)
+    ($(($i: tt, $t: ident)),* $(,)?) => {
+        impl<'a, $($t),*> Baz<'a,((),)> for ($($t),*,)
         where
-            $(for<'a> $t: 'a),*
+            $($t: Baz<'a, ()>),*
         {
-            type Ref<'a> = ($(&'a $t),*,);
+            type Ref = ($($t::Ref),*,);
 
-            fn borrow1<'a>(&self) -> Self::Ref<'a> {
-                todo!()
+            fn borrow1(&'a self) -> Self::Ref {
+                (
+                    $(self.$i.borrow1()),*,
+                )
             }
         }
     };
@@ -186,14 +192,14 @@ macro_rules! impl_baz2 {
 
 // This is turned into:
 // ```
-// impl_baz2!(T0);
-// impl_baz2!(T0, T1);
+// impl_baz2!((0, T0));
+// impl_baz2!((0, T0), (1, T1));
 // ...
-// impl_baz2!(T0 .. T9);
+// impl_baz2!((0, T0), .. (9, T9));
 // ```
 // This makes life easier!
 #[cfg(feature = "variadics_please")]
-variadics_please::all_tuples!(impl_baz2, 1, 10, T);
+variadics_please::all_tuples_enumerated!(impl_baz2, 1, 10, T);
 
 // To draw a conclusion, we use a generic param `M` to differ Trait `Baz`, so that
 // we can implemented it for all T and tuple of Ts separately.

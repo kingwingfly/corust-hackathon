@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "arc_swap_usage",
+    "dependency_injection",
+    "get_default",
+    "impl_trait_for_tuple",
+]
+resolver = "3"

@@ -1,0 +1,12 @@
+[package]
+name = "get_default"
+version = "0.1.0"
+edition = "2024"
+authors = ["Louis <836250617@qq.com>"]
+license = "MIT"
+
+[dependencies]
+
+[features]
+default = []
+err = []

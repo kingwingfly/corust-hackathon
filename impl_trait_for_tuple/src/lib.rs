@@ -80,8 +80,7 @@ where
 }
 
 /// Let's defined Baz to solve this issue
-// M is short for Marker
-trait Baz<M> {
+trait Baz<M /*M is short for Marker*/> {
     type Ref<'a>;
 
     // `1` to differ with trait `Bar`.
@@ -199,13 +198,13 @@ variadics_please::all_tuples!(impl_baz2, 1, 10, T);
 // To draw a conclusion, we use a generic param `M` to differ Trait `Baz`, so that
 // we can implemented it for all T and tuple of Ts separately.
 //
-// The example in this example may not be useful enough, however, you'll probably meet and even
+// The example in this article may not be useful enough, however, you'll probably meet and even
 // write your own such kind of code in the future learning especially in `tower` and `bevy`.
 //
 // Useful example can be found in
 // - [curriculum](https://github.com/kingwingfly/curriculum/blob/dev/curriculum/src/query.rs)
 // - [bevy_quadtree](https://github.com/kingwingfly/bevy_quadtree/blob/dev/bevy_quadtree/src/tree/query.rs)
 //
-// Some discussion in Rust forum:
+// Some discussion in Rust user forum:
 // - [How to define trait used for enhancing tuples](https://users.rust-lang.org/t/how-to-define-trait-used-for-enhancing-tuples/114886)
 // - [Macros: How to make impl Trait for tuple better](https://users.rust-lang.org/t/macros-how-to-make-impl-trait-for-tuple-better/133577)

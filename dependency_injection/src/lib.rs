@@ -25,7 +25,7 @@ use std::{
 ///
 /// Here, we use a struct to represent a function/system,
 /// aiming to avoid trait like `System<I>`, which is not convinient to store in `Vec<Box<dyn System<??>>`.
-struct FunctionSystem<F, I /* I for Input */> {
+struct FunctionSystem<F, I /* I is short for Input */> {
     f: F,
     /// PhantomData is used since `I` must be used.
     ///
@@ -154,7 +154,7 @@ trait SystemParam: Sized {
     fn retrieve(resources: &HashMap<TypeId, Box<dyn Any>>) -> Option<Self>;
 }
 
-/// Same as Json in axum which deserialize body when extracting/retrieving,
+/// Similar to Json in axum which deserialize body when extracting/retrieving,
 /// `FromU32` convert u32 in resources into T when extracting.
 struct FromU32<T>(T);
 

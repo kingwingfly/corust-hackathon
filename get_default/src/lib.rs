@@ -3,7 +3,7 @@
 use std::{collections::HashMap, hash::Hash};
 
 /// # Error message
-///
+/// ```
 /// error[E0499]: cannot borrow `*map` as mutable more than once at a time
 ///   --> src/lib.rs:11:13
 ///    |
@@ -42,6 +42,7 @@ use std::{collections::HashMap, hash::Hash};
 ///    | |_____- returning this value requires that `*map` is borrowed for `'m`
 ///
 /// For more information about this error, try `rustc --explain E0499`.
+/// ```
 ///
 /// # Explain
 ///

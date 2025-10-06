@@ -1,4 +1,5 @@
 - [arc_swap_usage](arc_swap_usage/)
+- [better_clap_version](better_clap_version/)
 - [dependency_injection](dependency_injection/)
 - [get_default](get_default/)
 - [impl_trait_for_tuple](impl_trait_for_tuple/)

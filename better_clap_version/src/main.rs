@@ -1,7 +1,7 @@
 //! When developing CLI tools, we have gotten used to querying version information
 //! with command like `cli_tool -V`.
 //!
-//! And many tool will show its git hash.
+//! And many tool will show its commit hash.
 //! e.g. vscode:
 //! ```ignore
 //! code --version
@@ -24,7 +24,7 @@ fn main() {
 /// Run `cargo run -F not_good -- -V`,
 /// got `better_clap_version 0.1.0`.
 ///
-/// This lacks of git tag and git hash.
+/// This lacks of commit tag and commit hash.
 #[cfg(feature = "not_good")]
 #[derive(Debug, Parser)]
 #[command(version)]
@@ -33,7 +33,7 @@ struct Cli {}
 /// Run `cargo run -F not_best -- -V`,
 /// got `better_clap_version v0.1.0 a11569b`.
 ///
-/// But the git hash is hard coded, and it's impossible for maintainers to update it
+/// But the commit hash is hard coded, and it's impossible for maintainers to update it
 /// in nightly building without mistake.
 #[cfg(feature = "not_best")]
 #[derive(Debug, Parser)]

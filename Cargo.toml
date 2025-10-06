@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "arc_swap_usage",
+    "better_clap_version",
     "dependency_injection",
     "get_default",
     "impl_trait_for_tuple",

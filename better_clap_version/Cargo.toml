@@ -1,0 +1,19 @@
+[package]
+name = "better_clap_version"
+version = "0.1.0"
+edition = "2024"
+authors = ["Louis <836250617@qq.com>"]
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.5.48", features = ["derive"] }
+
+[build-dependencies]
+anyhow = "1.0.100"
+vergen = { version = "9.0.6", features = ["build", "rustc"] }
+vergen-git2 = "1.0.7"
+
+[features]
+default = []
+not_good = []
+not_best = []

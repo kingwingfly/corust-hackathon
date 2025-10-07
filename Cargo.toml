@@ -4,6 +4,6 @@ members = [
     "better_clap_version",
     "dependency_injection",
     "get_default",
-    "impl_trait_for_tuple",
+    "impl_trait_for_tuple", "task_manager",
 ]
 resolver = "3"

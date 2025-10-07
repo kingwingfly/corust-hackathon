@@ -1,4 +1,4 @@
-#![allow(clippy::needless_lifetimes, unused)]
+#![allow(clippy::needless_lifetimes, dead_code)]
 
 use std::{collections::HashMap, hash::Hash};
 

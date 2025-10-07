@@ -12,7 +12,7 @@
 //!
 //! In this article, I will show you how dependency injection works and let your life with axum, bevy, etc. less confused.
 
-#![allow(unused)]
+#![allow(dead_code)]
 
 use std::{
     any::{Any, TypeId},
@@ -69,6 +69,7 @@ macro_rules! impl_system {
         {
             /// Here, `I` is cloned from HashMap, which is to say,
             /// in actual usage, `I` is always smart pointer and cheap to be cloned.
+            #[allow(unused)]
             fn run(&mut self, resources: &HashMap<TypeId, Box<dyn Any>>) {
                 $(
                     let Some($i) = resources
@@ -83,13 +84,13 @@ macro_rules! impl_system {
     };
 }
 
-/// This macro expanded to:
-/// ```
-/// impl_append!();
-/// impl_append!((I0, i0));
-/// ..
-/// impl_append!((I0, i0) .. (I4, i4));
-/// ```
+// This macro expanded to:
+// ```
+// impl_append!();
+// impl_append!((I0, i0));
+// ..
+// impl_append!((I0, i0) .. (I4, i4));
+// ```
 variadics_please::all_tuples!(impl_system, 0, 5, I, i);
 
 /// Let's define a struct to store the state.
@@ -179,6 +180,7 @@ macro_rules! impl_system2 {
             $($I: SystemParam),*
         {
             /// Now, `I` is retrieved by `SystemParam::retrieve`
+            #[allow(unused)]
             fn run2(&mut self, resources: &HashMap<TypeId, Box<dyn Any>>) {
                 $(
                     let Some($i) = <$I>::retrieve(resources) else {

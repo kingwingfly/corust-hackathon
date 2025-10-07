@@ -1,0 +1,18 @@
+[package]
+name = "task_manager"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+async-trait = "0.1.89"
+crossbeam-channel = { version = "0.5.15" }
+futures = "0.3.31"
+parking_lot = "0.12.5"
+tokio = { version = "1.47.1", features = ["macros", "parking_lot", "rt-multi-thread", "signal", "time"] }
+tokio-util = "0.7.16"
+
+[features]
+default = []
+basic = []
+cancellable = []

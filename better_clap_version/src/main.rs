@@ -13,7 +13,7 @@
 //!
 //! But how can we implement this in Rust? Let me tell you.
 
-#![allow(unused)]
+#![allow(dead_code)]
 
 use clap::Parser;
 

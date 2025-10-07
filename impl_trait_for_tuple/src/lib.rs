@@ -1,4 +1,4 @@
-#![allow(unused)]
+#![allow(dead_code)]
 
 /// Let's define a trait
 trait Foo {}
@@ -28,7 +28,7 @@ fn test1() {
 /// This trait is expected to be enhanced std::borrow::Borrow,
 /// which can not only borrow T as &T, but also can borrow (T1, T2, ...) as (&T1, &T2, ...).
 ///
-/// p.s this is just an example, `&(T1, T2)` can be borrowed as `(&T1, &T2)` through pat-match.
+/// p.s. this is just an example, `&(T1, T2)` can be borrowed as `(&T1, &T2)` through pat-match.
 trait Borrow<'a> {
     type Ref;
 
@@ -105,7 +105,7 @@ where
 ///
 /// Due to `Baz<()>` and `Baz<((),)>` is not the same, so there's no conflict.
 ///
-/// ps: It is `((),)` considered as tuple, while `(())` is considered the same as `()`.
+/// p.s. It is `((),)` considered as tuple, while `(())` is considered the same as `()`.
 /// So, we use `((),)` here to diff with `()`.
 #[cfg(not(feature = "variadics_please"))]
 impl<'a, T0, T1> Baz<'a, ((),)> for (T0, T1)
@@ -156,7 +156,7 @@ macro_rules! impl_baz {
     };
 }
 
-/// Let's just begin from 3-elem-tuple, since 2-elem-tuple has been implemented before
+// Let's just begin from 3-elem-tuple, since 2-elem-tuple has been implemented before
 #[cfg(not(feature = "variadics_please"))]
 impl_baz!(0, 1, 2);
 #[cfg(not(feature = "variadics_please"))]

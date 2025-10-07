@@ -2,7 +2,7 @@
 //! > There are many situations in which one might want to have some data structure that is often read and seldom updated.
 //! > Some examples might be a configuration of a service, routing tables, snapshot of some data that is renewed every few minutes, etc.
 
-#![allow(unused)]
+#![allow(dead_code)]
 
 use std::sync::{Arc, RwLock};
 

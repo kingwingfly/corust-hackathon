@@ -4,10 +4,7 @@
 
 #![allow(unused)]
 
-use std::{
-    fmt::DebugStruct,
-    sync::{Arc, RwLock},
-};
+use std::sync::{Arc, RwLock};
 
 use arc_swap::ArcSwap;
 

@@ -18,7 +18,6 @@ use std::{
     any::{Any, TypeId},
     collections::HashMap,
     marker::PhantomData,
-    vec,
 };
 
 /// System: in bevy ecs context, system is similar to function.
@@ -167,7 +166,7 @@ impl SystemParam for FromU32<u64> {
     }
 }
 
-/// To avoid conflict implementation with `Sysyem`
+/// To avoid conflict implementation with `System`
 trait System2 {
     fn run2(&mut self, resources: &HashMap<TypeId, Box<dyn Any>>);
 }

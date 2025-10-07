@@ -58,7 +58,7 @@ fn app1_test() {
 //
 // Moreover, if `ReadGuard` always exists, `WriteGuard` is prevented so that update will be blocked.
 //
-// Then, `arc-swap` become the solution.
+// Then, `arc-swap` becomes the solution.
 
 #[derive(Default)]
 struct App2 {

@@ -52,7 +52,7 @@ use std::{collections::HashMap, hash::Hash};
 /// ```
 ///
 /// In branch `Some(value) => value` where `value: &'m mut V`, the life time of `value` is inferred as `'m`,
-/// so that the the `map.get_mut<'a>(&key)` in `match map.get_mut(&key)` is actully inffered as `map.get_mut<'m>()`.
+/// so that the `map.get_mut<'a>(&key)` in `match map.get_mut(&key)` is actually inferred as `map.get_mut<'m>()`.
 /// That is to say, we borrow `*map` as mutable from `match map.get_mut(&key)` to return.
 ///
 /// Inside branch `None`, there's also a `map.get_mut<'a>(&key)`, however, we have borrowed `*map` as mutable before

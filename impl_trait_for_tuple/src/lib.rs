@@ -81,7 +81,7 @@ where
     }
 }
 
-/// Let's defined Baz to solve this issue
+/// Let's define Baz to solve this issue
 trait Baz<'a, M /*M is short for Marker*/> {
     type Ref;
 
@@ -103,7 +103,7 @@ where
 
 /// impl `Baz<((),)>` for all tuples of `T`s.
 ///
-/// Due to `Baz<()>` and `Baz<((),)>` is not the same, so there's no confict.
+/// Due to `Baz<()>` and `Baz<((),)>` is not the same, so there's no conflict.
 ///
 /// ps: It is `((),)` considered as tuple, while `(())` is considered the same as `()`.
 /// So, we use `((),)` here to diff with `()`.

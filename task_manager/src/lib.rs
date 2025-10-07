@@ -24,7 +24,7 @@ use parking_lot::RwLock;
 use tokio::{runtime::Builder, sync::Semaphore, time::sleep};
 use tokio_util::sync::CancellationToken;
 
-/// Below is the simplest implementation, which is re-write based on tokio documentation, but lacks a lot functions we mentioned above.
+/// Below is the simplest implementation, which is rewritten based on tokio documentation, but lacks a lot of functions we mentioned above.
 #[derive(Debug)]
 struct BasicTaskManager {
     /// The sender of `Duration`.

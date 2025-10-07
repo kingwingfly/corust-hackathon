@@ -24,7 +24,7 @@ use parking_lot::RwLock;
 use tokio::{runtime::Builder, sync::Semaphore, time::sleep};
 use tokio_util::sync::CancellationToken;
 
-/// Below is the simplest implementation, which is re-write based on tokio documentation, but lacks a lot functions we mentioned above.
+/// Below is the simplest implementation, which is rewritten based on tokio documentation, but lacks a lot of functions we mentioned above.
 #[derive(Debug)]
 struct BasicTaskManager {
     /// The sender of `Duration`.
@@ -43,7 +43,7 @@ impl BasicTaskManager {
                 .build()
                 .unwrap()
                 .block_on(async move {
-                    // wait new task
+                    // wait for new task
                     while let Ok(duration) = rx.recv() {
                         // spawn it in tokio runtime
                         tokio::spawn(async move {
@@ -107,7 +107,7 @@ struct Task<K> {
     key: K,
     /// `Tasks<K>` contains `Semaphore` and waiting queue,
     /// in `IntoFuture::into_future`, Box<dyn AsTask<K>> is gotten from the waiting queue,
-    /// and turn into Future to be awaited
+    /// and turned into Future to be awaited
     tasks: Arc<Tasks<K>>,
 }
 
@@ -126,8 +126,8 @@ where
             let (task, context) = {
                 // Get ongoing queue WriteGuard first.
                 // If we remove task from waiting queue first without locking ongoing queue,
-                // `TaskManage::cancel` may find task not exist in both waiting and ongoing queue,
-                // leading unexpected behavior.
+                // `TaskManager::cancel` may find task does not exist in both waiting and ongoing queue,
+                // leading to unexpected behavior.
                 let mut ongoing = self.tasks.ongoing.write();
                 let Some(task) = self.tasks.waiting.write().remove(&self.key) else {
                     // The task is cancelled before started
@@ -239,7 +239,7 @@ where
                 .unwrap()
                 .block_on(async move {
                     let mut jhs = vec![];
-                    // wait new task
+                    // wait for new task
                     while let Ok(task) = rx.recv() {
                         // spawn it in tokio runtime
                         jhs.push(tokio::spawn(task.into_future()));
@@ -268,7 +268,7 @@ where
     }
 }
 
-/// Impl a TaskManager whose task key is usize
+/// Implement a TaskManager whose task key is usize
 impl TaskManager<usize> {
     fn spawn_task(&self, task: impl AsTask<usize> + 'static) -> Result<usize> {
         static KEY: AtomicUsize = AtomicUsize::new(0);
@@ -292,9 +292,9 @@ impl TaskManager<usize> {
 
 impl<K> Drop for TaskManager<K> {
     fn drop(&mut self) {
-        // clear all waiting task
+        // clear all waiting tasks
         self.tasks.waiting.write().drain();
-        // cancel all ongoing task
+        // cancel all ongoing tasks
         self.tasks
             .ongoing
             .write()
@@ -317,10 +317,10 @@ impl<K> Drop for TaskManager<K> {
 /// ```
 #[test]
 fn test2() -> Result<()> {
-    // new a task manager
+    // create a new task manager
     let task_manager = TaskManager::<usize>::new();
 
-    // spawn three Sleep task
+    // spawn three Sleep tasks
     let _k0 = task_manager.spawn_task(SleepTask {
         duration: Duration::from_secs(1),
     })?;

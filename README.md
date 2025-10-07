@@ -3,7 +3,7 @@
 - [x] [dependency_injection](dependency_injection/)
 - [x] [get_default](get_default/)
 - [x] [impl_trait_for_tuple](impl_trait_for_tuple/)
-- [ ] task_manager
+- [x] [task_manager](task_manager/)
 - [ ] tauri_state_not_drop_bug
 - [ ] async_trait_attr_macro
 

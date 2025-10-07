@@ -24,7 +24,7 @@ fn main() {
 /// Run `cargo run -F not_good -- -V`,
 /// got `better_clap_version 0.1.0`.
 ///
-/// This lacks of commit tag and commit hash.
+/// This lacks commit tag and commit hash.
 #[cfg(feature = "not_good")]
 #[derive(Debug, Parser)]
 #[command(version)]

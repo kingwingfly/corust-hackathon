@@ -5,9 +5,9 @@
 //!
 //! e.g. `iterable.map(|x| { ... })`, x is retrieved from the iterable and injected into the closure.
 //!
-//! You can see this trick in many famouse crates, including teloxide, axum and bevy.
+//! You can see this trick in many famous crates, including teloxide, axum and bevy.
 //!
-//! e.g. In bevy, we give `|mut hp: Single<&mut HP, With<Player>>| **hp += 1` to the scheduler, `HP` is automatally retrieved from somewhere and passed to the closure.
+//! e.g. In bevy, we give `|mut hp: Single<&mut HP, With<Player>>| **hp += 1` to the scheduler, `HP` is automatically retrieved from somewhere and passed to the closure.
 //! In axum, we define `async fn(Json(payload): Json<Payload>) -> Result<impl IntoResponse>` and give it to MethodRouter, the payload is then deserialized and provided to the closure.
 //!
 //! In this article, I will show you how dependency injection works and let your life with axum, bevy, etc. less confused.
@@ -18,13 +18,12 @@ use std::{
     any::{Any, TypeId},
     collections::HashMap,
     marker::PhantomData,
-    vec,
 };
 
 /// System: in bevy ecs context, system is similar to function.
 ///
 /// Here, we use a struct to represent a function/system,
-/// aiming to avoid trait like `System<I>`, which is not convinient to store in `Vec<Box<dyn System<??>>`.
+/// aiming to avoid trait like `System<I>`, which is not convenient to store in `Vec<Box<dyn System<??>>`.
 struct FunctionSystem<F, I /* I is short for Input */> {
     f: F,
     /// PhantomData is used since `I` must be used.
@@ -69,7 +68,7 @@ macro_rules! impl_system {
             $($I: Any + Clone),*
         {
             /// Here, `I` is cloned from HashMap, which is to say,
-            /// in actuall usage, `I` is always smart pointer and cheap to be cloned.
+            /// in actual usage, `I` is always smart pointer and cheap to be cloned.
             fn run(&mut self, resources: &HashMap<TypeId, Box<dyn Any>>) {
                 $(
                     let Some($i) = resources
@@ -93,7 +92,7 @@ macro_rules! impl_system {
 /// ```
 variadics_please::all_tuples!(impl_system, 0, 5, I, i);
 
-/// Lets define a struct to store the state.
+/// Let's define a struct to store the state.
 #[derive(Default)]
 struct Scheduler {
     systems: Vec<Box<dyn System>>,
@@ -122,7 +121,7 @@ impl Scheduler {
     }
 }
 
-/// Lets test it!
+/// Let's test it!
 #[test]
 fn test() {
     let mut scheduler = Scheduler::default();
@@ -147,9 +146,9 @@ fn test() {
 }
 
 // Now we implemented basic dependency injection, however, compared to axum or bevy,
-// we are lack of things like `Json`, `Path`, `Query`, `Res`, etc.
+// we lack things like `Json`, `Path`, `Query`, `Res`, etc.
 
-/// Now, we need define how we extract resources from HashMap.
+/// Now, we need to define how we extract resources from HashMap.
 trait SystemParam: Sized {
     fn retrieve(resources: &HashMap<TypeId, Box<dyn Any>>) -> Option<Self>;
 }
@@ -167,7 +166,7 @@ impl SystemParam for FromU32<u64> {
     }
 }
 
-/// To avoid conflict implementation with `Sysyem`
+/// To avoid conflict implementation with `System`
 trait System2 {
     fn run2(&mut self, resources: &HashMap<TypeId, Box<dyn Any>>);
 }
@@ -196,5 +195,5 @@ variadics_please::all_tuples!(impl_system2, 0, 5, I, i);
 
 // We can simply imagine, instead of clone from HashMap, now the resources will be retrieved
 // according to the logic in `SystemParam::retrieve`, just like `Json` in axum does.
-// For those clever enough, I think stoping here is Ok, there's then nothing more about denpendency injection.
+// For those clever enough, I think stopping here is Ok, there's then nothing more about dependency injection.
 // Have a nice day!

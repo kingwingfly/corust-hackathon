@@ -4,6 +4,8 @@ members = [
     "better_clap_version",
     "dependency_injection",
     "get_default",
-    "impl_trait_for_tuple", "task_manager",
+    "impl_trait_for_tuple",
+    "task_manager",
+    "tauri_state_not_drop_bug",
 ]
 resolver = "3"

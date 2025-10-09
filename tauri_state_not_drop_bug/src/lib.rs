@@ -19,7 +19,7 @@ type StateMap = HashMap<TypeId, Box<dyn Any>>;
 struct DummyTauriApp {
     /// The states can be retrieved by dependency injection, e.g. invoke handler in Tauri
     states: StateMap,
-    /// The callback when app existing
+    /// The callback when app exiting
     on_exit: Option<Box<dyn FnOnce()>>,
 }
 
@@ -68,7 +68,7 @@ fn test2() {
 /// ```
 ///
 /// However, `on_window_event::<F: Fn(&Window<R>, &WindowEvent) + Send + Sync + 'static>`,
-/// according to the trait bound of F, we can know that it's impossiable to get `State` dropped
+/// according to the trait bound of F, we can know that it's impossible to get `State` dropped
 /// with useless `&Window<R>` and `&WindowEvent`.
 ///
 /// So trick is needed to make `State` dropped in the callback.
@@ -95,7 +95,7 @@ fn test3() {
     // process is killed, no use after free bug.
 }
 
-// Wait, so `Arc` is used and `State` is maken immutable, how can we mutate state with tauri invoke handlers?
+// Wait, so `Arc` is used and `State` is made immutable, how can we mutate state with tauri invoke handlers?
 //
 // Well, use internal mutability instead. By the way, due to Tauri's poor implementation, tauri DOES NOT support mutate state at all.
 // So, use Arc tricky won't increase the complexity using Tauri, you always need internal mutability.

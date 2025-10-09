@@ -4,7 +4,7 @@
 - [x] [get_default](get_default/)
 - [x] [impl_trait_for_tuple](impl_trait_for_tuple/)
 - [x] [task_manager](task_manager/)
-- [ ] tauri_state_not_drop_bug
+- [x] [tauri_state_not_drop_bug](tauri_state_not_drop_bug/)
 - [ ] async_trait_attr_macro
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)

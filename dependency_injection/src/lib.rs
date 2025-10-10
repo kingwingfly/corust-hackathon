@@ -29,7 +29,7 @@ struct FunctionSystem<F, I /* I is short for Input */> {
     /// PhantomData is used since `I` must be used.
     ///
     /// `fn() -> I`, the fn pointer, is chosen because it doesn't mean the ownership of `I`.
-    /// So, whether I is Send/Sync/Drop won't influence `FunctionSystem`.
+    /// So, whether I is Send/Sync/?Sized won't influence `FunctionSystem`.
     ///
     /// And `fn() -> I` is also covariant, the same as `I`.
     _phantom: PhantomData<fn() -> I>,

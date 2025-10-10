@@ -97,5 +97,5 @@ fn test3() {
 
 // Wait, so `Arc` is used and `State` is made immutable, how can we mutate state with tauri invoke handlers?
 //
-// Well, use internal mutability instead. By the way, due to Tauri's poor implementation, tauri DOES NOT support mutate state at all.
+// Well, use internal mutability instead. By the way, due to Tauri's poor implementation, tauri DOES NOT support mutable state at all.
 // So, use Arc tricky won't increase the complexity using Tauri, you always need internal mutability.

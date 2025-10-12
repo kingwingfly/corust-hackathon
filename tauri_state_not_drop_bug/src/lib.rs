@@ -1,5 +1,10 @@
 #![allow(dead_code)]
 
+//! In Tauri, we can use dependency injection to retrieve state in invoke handlers. However, due to Tauri's poor implementation,
+//! the states in app won't get dropped when exiting due to `std::process::exit(0)` is called directly.
+//!
+//! In this example, I'll show you the tricky to hack this bug, and you can solve your own in your daily practice.
+
 use std::{
     any::{Any, TypeId},
     collections::HashMap,
@@ -99,3 +104,23 @@ fn test3() {
 //
 // Well, use internal mutability instead. By the way, due to Tauri's poor implementation, tauri DOES NOT support mutable state at all.
 // So, use Arc tricky won't increase the complexity using Tauri, you always need internal mutability.
+
+/// Inspired by `test3`, we can event achieve with raw pointer.
+#[test]
+fn test4() {
+    use std::sync::Arc;
+
+    let mut state = State;
+    let state_ptr = &mut state as *mut _;
+
+    let mut app = DummyTauriApp {
+        states: HashMap::from([(TypeId::of::<Arc<State>>(), Box::new(state) as _)]),
+        on_exit: Some(Box::new(move || unsafe {
+            let _ = Box::from_raw(state_ptr);
+            // We successfully get `State` dropped without access `app.states`
+        })),
+    };
+
+    app.exit();
+    // process is killed, no use after free bug.
+}

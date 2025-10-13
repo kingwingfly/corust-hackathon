@@ -142,15 +142,17 @@ fn handle_dyn_qux(b: &dyn Qux) {
 
 /// Solution 4, use dynosaur crate.
 ///
-/// In many cases, we do not need function like `handle_qux` above,
-/// since it generate code for all possible `Q: Qux`.
+/// In many cases, we do need function like `handle_qux` above,
+/// but it generate code for all possible `Q: Qux`.
 /// And `handle_dyn_qux` become more useful and cheap.
 ///
 /// But as mentioned above, async fn desugar to `impl Future<..>` which is not dyn-compatible,
 /// while async-trait proc-macro solution has vtable consumption.
+///
+/// If `async_trait` is used, the dyn consumption is unavoidable.
 /// Then `dynosaur` crate is used to overcome these drawbacks.
 #[trait_variant::make(Corge: Send)]
-#[dynosaur::dynosaur(DynLocalcorge = dyn(box) Corge, bridge(dyn))]
+#[dynosaur::dynosaur(DynLocalcorge = dyn(box) LocalCorge, bridge(dyn))]
 #[dynosaur::dynosaur(Dyncorge = dyn(box) Corge, bridge(dyn))]
 trait LocalCorge {
     async fn corge(&self);
@@ -168,7 +170,8 @@ where
 
 /// Has vtable consumption.
 ///
-/// Compared with `trait_variant::make` solution, it supports dyn dispatch to some extent.
+/// Compared with `trait_variant::make` solution,
+/// it supports dyn dispatch to some extent by generated `Dyncorge` (wrapper of `dyn ErasedCorge`).
 fn handle_dyn_corge(c: &Dyncorge) {
     assert_send(c.corge());
 }

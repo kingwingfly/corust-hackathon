@@ -1,0 +1,14 @@
+[package]
+name = "async_fn_in_traits"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait = "0.1.89"
+dynosaur = "0.3.0"
+trait-variant = "0.1.2"
+
+[features]
+default = ["nightly"]
+err = []
+nightly = []

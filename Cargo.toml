@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "arc_swap_usage",
+    "async_fn_in_traits",
     "better_clap_version",
     "dependency_injection",
     "get_default",

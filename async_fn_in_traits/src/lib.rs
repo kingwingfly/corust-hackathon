@@ -1,7 +1,7 @@
 //! https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits/
 
 #![allow(dead_code)]
-#![cfg_attr(feature = "nightly", feature(return_type_notation))]
+#![feature(return_type_notation)]
 
 use std::{marker::PhantomData, pin::Pin};
 
@@ -179,7 +179,6 @@ fn handle_dyn_corge(c: &Dyncorge) {
 /// Solution 5, nightly feature RTN.
 ///
 /// The RFC of RTN is https://rust-lang.github.io/rfcs/3654-return-type-notation.html
-#[cfg(feature = "nightly")]
 fn handle_nightly_foo<F>(f: F)
 where
     F: Foo<foo(..): Send>,
@@ -187,7 +186,6 @@ where
     assert_send(f.foo());
 }
 
-#[cfg(feature = "nightly")]
 #[test]
 fn test() {
     handle_nightly_foo(A(0));

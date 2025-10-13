@@ -49,7 +49,7 @@ where
 // In `handle_b`, `b.foo()` is not `Send`, in `handle_foo`, `f.foo()` is not `Send`, this is expected.
 // No matter `b`/`f` is `Send` or not, the future is not `Send`.
 //
-// But in `handle_a`, `a.foo()` is suprisingly `Send`, this confuses me a lot.
+// But in `handle_a`, `a.foo()` is surprisingly `Send`, this confuses me a lot.
 // Compared `A` and `B`, I can assume that `a.foo()` is `Send` since `A` is `Send`.
 // But `f.foo()` is not `Send` even `f` is `Send`, so the assumption is definitely wrong.
 //
@@ -57,7 +57,7 @@ where
 //
 // The answer can be found in this Rust Forum thread: https://users.rust-lang.org/t/question-about-async-fn-in-traits-return-type-is-send-or-not/134613
 //
-// The compiler is more smart than we think, it can infer future evalued by `A::foo()` is Send,
+// The compiler is more smart than we think, it can infer future evaluated by `A::foo()` is Send,
 // while that of `B::foo()` is not.
 // And `f: Send` cannot ensure `f.foo()` is Send, since Rc/Cell may be used in `f.foo`.
 //
@@ -147,10 +147,10 @@ fn handle_dyn_qux(b: &dyn Qux) {
 /// And `handle_dyn_qux` become more useful and cheap.
 ///
 /// But as mentioned above, async fn desugar to `impl Future<..>` which is not dyn-compatible,
-/// while async-trait proc-macro sulution has vtable consumption.
+/// while async-trait proc-macro solution has vtable consumption.
 /// Then `dynosaur` crate is used to overcome these drawbacks.
 #[trait_variant::make(Corge: Send)]
-#[dynosaur::dynosaur(DynLoalcorge = dyn(box) Corge, bridge(dyn))]
+#[dynosaur::dynosaur(DynLocalcorge = dyn(box) Corge, bridge(dyn))]
 #[dynosaur::dynosaur(Dyncorge = dyn(box) Corge, bridge(dyn))]
 trait LocalCorge {
     async fn corge(&self);
@@ -168,7 +168,7 @@ where
 
 /// Has vtable consumption.
 ///
-/// Compared with `trait_variant::make` solution, it supports dyn dispatch to some extend.
+/// Compared with `trait_variant::make` solution, it supports dyn dispatch to some extent.
 fn handle_dyn_corge(c: &Dyncorge) {
     assert_send(c.corge());
 }

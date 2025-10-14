@@ -9,14 +9,14 @@ use std::{
 
 // Sometimes, we need a HashMap, whose key is a reference to certain field of value.
 //
-// e.g. HaspMap<&str, Foo>, whose key `&str` is reference to `key` in `Foo { key: String }`.
+// e.g. HashMap<&str, Foo>, whose key `&str` is reference to `key` in `Foo { key: String }`.
 
 /// Define Foo
 struct Foo {
     key: String,
 }
 
-/// This is an failed attemption.
+/// This is a failed attempt.
 /// ```ignore
 /// error[E0505]: cannot move out of `foo1` because it is borrowed
 ///   --> hashmap_but_key_ref_to_value/src/lib.rs:28:36
@@ -69,9 +69,9 @@ fn test1() {
     foos.insert(foo2.key.as_str(), foo2);
 }
 
-// As the compiler figure out, foo.key is referred while it's also move into HashMap.
+// As the compiler figures out, foo.key is referred while it's also move into HashMap.
 //
-// But it suggest cloning the key, which is must not we want.
+// But it suggest cloning the key, which is not what we want.
 
 struct Bar {
     key: Rc<String>,
@@ -119,7 +119,7 @@ fn test2() {
 //
 // However, you can simply solve this with Hash trait and by using HashSet instead.
 //
-// With this tips, you will definitely know how to do it.
+// With these tips, you will definitely know how to do it.
 // But we all know, The simplest way is not always the easiest to come by.
 
 struct Baz {

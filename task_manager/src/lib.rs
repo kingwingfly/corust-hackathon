@@ -6,7 +6,8 @@
 #![allow(dead_code)]
 
 use std::{
-    collections::HashMap,
+    borrow::Borrow,
+    collections::{HashMap, HashSet},
     fmt::Display,
     hash::Hash,
     pin::Pin,
@@ -113,8 +114,9 @@ struct Task<K> {
 
 impl<K> IntoFuture for Task<K>
 where
-    K: Hash + Eq + Clone + Send + Sync,
+    K: Hash + Eq + Send + Sync,
     Task<K>: Send + 'static,
+    TaskContext<K>: Borrow<K> + Clone,
 {
     type Output = Result<()>;
     type IntoFuture = Pin<Box<dyn Future<Output = Self::Output> + Send>>;
@@ -134,10 +136,10 @@ where
                     return Ok(());
                 };
                 let context = TaskContext {
-                    key: self.key.clone(),
+                    key: self.key,
                     cancel: CancellationToken::new(),
                 };
-                ongoing.insert(self.key, context.clone());
+                ongoing.insert(context.clone());
                 (task, context)
             };
             // basic tokio::select! usage
@@ -191,6 +193,54 @@ struct TaskContext<K> {
     cancel: CancellationToken,
 }
 
+/// See https://github.com/kingwingfly/corust-hackathon/tree/dev/hashmap_but_key_ref_to_value
+impl<K> Borrow<K> for TaskContext<K>
+where
+    TaskContext<K>: Eq + Ord + Hash,
+{
+    fn borrow(&self) -> &K {
+        &self.key
+    }
+}
+
+impl<K> Hash for TaskContext<K>
+where
+    K: Hash,
+{
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.key.hash(state);
+    }
+}
+
+impl<K> PartialEq for TaskContext<K>
+where
+    K: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.key == other.key
+    }
+}
+
+impl<K> Eq for TaskContext<K> where TaskContext<K>: PartialEq {}
+
+impl<K> PartialOrd for TaskContext<K>
+where
+    TaskContext<K>: Ord,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl<K> Ord for TaskContext<K>
+where
+    K: Ord,
+{
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.key.cmp(&other.key)
+    }
+}
+
 /// The main entry of our task manager
 struct TaskManager<K> {
     tx: Option<Sender<Task<K>>>,
@@ -202,7 +252,7 @@ struct TaskManager<K> {
 struct Tasks<K> {
     semaphore: Arc<Semaphore>,
     waiting: RwLock<HashMap<K, Box<dyn AsTask<K>>>>,
-    ongoing: RwLock<HashMap<K, TaskContext<K>>>,
+    ongoing: RwLock<HashSet<TaskContext<K>>>,
 }
 
 impl<K> Default for Tasks<K> {
@@ -225,8 +275,9 @@ impl<K> Tasks<K> {
 
 impl<K> TaskManager<K>
 where
-    K: Hash + Eq + Clone + Send + Sync,
+    K: Hash + Eq + Send + Sync,
     Task<K>: Send + 'static,
+    TaskContext<K>: Borrow<K> + Clone,
 {
     fn new() -> Self {
         let (tx, rx) = unbounded::<Task<K>>();
@@ -298,7 +349,7 @@ impl<K> Drop for TaskManager<K> {
         self.tasks
             .ongoing
             .write()
-            .values()
+            .iter()
             .for_each(|context| context.cancel.cancel());
         // disconnect and close the channel
         let _ = self.tx.take();

@@ -5,6 +5,7 @@ members = [
     "better_clap_version",
     "dependency_injection",
     "get_default",
+    "hashmap_but_key_ref_to_value",
     "impl_trait_for_tuple",
     "task_manager",
     "tauri_state_not_drop_bug",

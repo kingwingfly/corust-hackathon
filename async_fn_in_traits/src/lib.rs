@@ -47,7 +47,7 @@ where
 }
 
 // In `handle_b`, `b.foo()` is not `Send`, in `handle_foo`, `f.foo()` is not `Send`, this is expected.
-// No matter `b`/`f` is `Send` or not, the future is not `Send`.
+// No matter `b`/`f` is `Send` or not, the future returned is not `Send`.
 //
 // But in `handle_a`, `a.foo()` is surprisingly `Send`, this confuses me a lot.
 // Compared `A` and `B`, I can assume that `a.foo()` is `Send` since `A` is `Send`.
@@ -113,7 +113,7 @@ where
 ///
 /// The drawback of this solution are:
 /// - dyn Future, leads vtable consumption
-/// - it makes **all** return types of fn in trait `Send`, and we may not need this
+/// - it makes **all** return types of async fn in trait `Send`, and we may not need this
 ///
 /// By the way, it generate trait which is dyn-compatible, which means you can use `dyn Qux`.
 #[async_trait::async_trait]
@@ -152,7 +152,7 @@ fn handle_dyn_qux(b: &dyn Qux) {
 /// If `async_trait` is used, the dyn consumption is unavoidable.
 /// Then `dynosaur` crate is used to overcome these drawbacks.
 #[trait_variant::make(Corge: Send)]
-#[dynosaur::dynosaur(DynLocalcorge = dyn(box) LocalCorge, bridge(dyn))]
+#[dynosaur::dynosaur(DynLocalCorge = dyn(box) LocalCorge, bridge(dyn))]
 #[dynosaur::dynosaur(Dyncorge = dyn(box) Corge, bridge(dyn))]
 trait LocalCorge {
     async fn corge(&self);
@@ -181,7 +181,7 @@ fn handle_dyn_corge(c: &Dyncorge) {
 /// The RFC of RTN is https://rust-lang.github.io/rfcs/3654-return-type-notation.html
 fn handle_nightly_foo<F>(f: F)
 where
-    F: Foo<foo(..): Send>,
+    F: Foo<foo(..): Send>, // Here, we ensure f.foo() is Send
 {
     assert_send(f.foo());
 }

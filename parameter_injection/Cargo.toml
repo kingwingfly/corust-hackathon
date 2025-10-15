@@ -1,5 +1,5 @@
 [package]
-name = "dependency_injection"
+name = "parameter_injection"
 version = "0.1.0"
 edition = "2024"
 authors = ["Louis <836250617@qq.com>"]

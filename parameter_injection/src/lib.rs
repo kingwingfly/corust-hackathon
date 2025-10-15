@@ -1,7 +1,9 @@
 //! This case is highly inspired by this tutorial
 //! [dependency_injection_like_bevy_from_scratch](https://promethia-27.github.io/dependency_injection_like_bevy_from_scratch/introductions.html)
 //!
-//! Instead of provide parameters when calling a function, dependency injection is to retrieve parameters from somewhere.
+//! Here, `dependency injection` is actually misused. The correct term is `parameter injection`.
+//!
+//! Instead of provide parameters when calling a function, parameter injection is to retrieve parameters from somewhere.
 //!
 //! e.g. `iterable.map(|x| { ... })`, x is retrieved from the iterable and injected into the closure.
 //!
@@ -10,7 +12,7 @@
 //! e.g. In bevy, we give `|mut hp: Single<&mut HP, With<Player>>| **hp += 1` to the scheduler, `HP` is automatically retrieved from somewhere and passed to the closure.
 //! In axum, we define `async fn(Json(payload): Json<Payload>) -> Result<impl IntoResponse>` and give it to MethodRouter, the payload is then deserialized and provided to the closure.
 //!
-//! In this article, I will show you how dependency injection works and let your life with axum, bevy, etc. less confused.
+//! In this article, I will show you how parameter injection works and let your life with axum, bevy, etc. less confused.
 
 #![allow(dead_code)]
 
@@ -146,7 +148,7 @@ fn test() {
     scheduler.run();
 }
 
-// Now we implemented basic dependency injection, however, compared to axum or bevy,
+// Now we implemented basic parameter injection, however, compared to axum or bevy,
 // we lack things like `Json`, `Path`, `Query`, `Res`, etc.
 
 /// Now, we need to define how we extract resources from HashMap.
@@ -197,5 +199,5 @@ variadics_please::all_tuples!(impl_system2, 0, 5, I, i);
 
 // We can simply imagine, instead of clone from HashMap, now the resources will be retrieved
 // according to the logic in `SystemParam::retrieve`, just like `Json` in axum does.
-// For those clever enough, I think stopping here is Ok, there's then nothing more about dependency injection.
+// For those clever enough, I think stopping here is Ok, there's then nothing more about parameter injection.
 // Have a nice day!

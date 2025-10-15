@@ -3,7 +3,7 @@ members = [
     "arc_swap_usage",
     "async_fn_in_traits",
     "better_clap_version",
-    "dependency_injection",
+    "parameter_injection",
     "get_default",
     "hashmap_but_key_ref_to_value",
     "impl_trait_for_tuple",

@@ -1,6 +1,6 @@
 - [x] [arc_swap_usage](arc_swap_usage/)
 - [x] [better_clap_version](better_clap_version/)
-- [x] [dependency_injection](dependency_injection/)
+- [x] [parameter_injection](parameter_injection/)
 - [x] [get_default](get_default/)
 - [x] [impl_trait_for_tuple](impl_trait_for_tuple/)
 - [x] [task_manager](task_manager/)

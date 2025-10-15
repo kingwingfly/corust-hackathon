@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-//! In Tauri, we can use dependency injection to retrieve state in invoke handlers. However, due to Tauri's poor implementation,
+//! In Tauri, we can use parameter injection to retrieve state in invoke handlers. However, due to Tauri's poor implementation,
 //! the states in app won't get dropped when exiting due to `std::process::exit(0)` is called directly.
 //!
 //! In this example, I'll show you the tricky to hack this bug, and you can solve your own in your daily practice.
@@ -22,7 +22,7 @@ type StateMap = HashMap<TypeId, Box<dyn Any>>;
 
 /// Dummy Tauri app.
 struct DummyTauriApp {
-    /// The states can be retrieved by dependency injection, e.g. invoke handler in Tauri
+    /// The states can be retrieved by parameter injection, e.g. invoke handler in Tauri
     states: StateMap,
     /// The callback when app exiting
     on_exit: Option<Box<dyn FnOnce()>>,

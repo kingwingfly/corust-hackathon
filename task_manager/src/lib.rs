@@ -20,9 +20,15 @@ use std::{
 };
 
 use anyhow::{Result, anyhow};
-use crossbeam_channel::{Sender, unbounded};
 use parking_lot::RwLock;
-use tokio::{runtime::Builder, sync::Semaphore, time::sleep};
+use tokio::{
+    runtime::Builder,
+    sync::{
+        Semaphore,
+        mpsc::{UnboundedSender, unbounded_channel},
+    },
+    time::sleep,
+};
 use tokio_util::sync::CancellationToken;
 
 /// Below is the simplest implementation, which is rewritten based on tokio documentation, but lacks a lot of functions we mentioned above.
@@ -30,12 +36,12 @@ use tokio_util::sync::CancellationToken;
 struct BasicTaskManager {
     /// The sender of `Duration`.
     /// `Duration` is used to create `Sleep`, which is used to simulate async tasks like fs-ops, net-ops, etc.
-    tx: Sender<Duration>,
+    tx: UnboundedSender<Duration>,
 }
 
 impl BasicTaskManager {
     fn new() -> Self {
-        let (tx, rx) = unbounded::<Duration>();
+        let (tx, mut rx) = unbounded_channel::<Duration>();
         // spawn a new thread
         thread::spawn(move || {
             // build an async runtime in the new thread
@@ -45,7 +51,7 @@ impl BasicTaskManager {
                 .unwrap()
                 .block_on(async move {
                     // wait for new task
-                    while let Ok(duration) = rx.recv() {
+                    while let Some(duration) = rx.recv().await {
                         // spawn it in tokio runtime
                         tokio::spawn(async move {
                             println!("task {} started", duration.as_secs_f32());
@@ -243,7 +249,7 @@ where
 
 /// The main entry of our task manager
 struct TaskManager<K> {
-    tx: Option<Sender<Task<K>>>,
+    tx: Option<UnboundedSender<Task<K>>>,
     tasks: Arc<Tasks<K>>,
     jh: Option<JoinHandle<()>>,
 }
@@ -280,7 +286,7 @@ where
     TaskContext<K>: Borrow<K> + Clone,
 {
     fn new() -> Self {
-        let (tx, rx) = unbounded::<Task<K>>();
+        let (tx, mut rx) = unbounded_channel::<Task<K>>();
         // spawn a new thread
         let jh = thread::spawn(move || {
             // build an async runtime in the new thread
@@ -291,7 +297,7 @@ where
                 .block_on(async move {
                     let mut jhs = vec![];
                     // wait for new task
-                    while let Ok(task) = rx.recv() {
+                    while let Some(task) = rx.recv().await {
                         // spawn it in tokio runtime
                         jhs.push(tokio::spawn(task.into_future()));
                     }

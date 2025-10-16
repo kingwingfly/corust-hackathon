@@ -27,6 +27,7 @@ use tokio::{
         Semaphore,
         mpsc::{UnboundedSender, unbounded_channel},
     },
+    task::JoinSet,
     time::sleep,
 };
 use tokio_util::sync::CancellationToken;
@@ -295,15 +296,16 @@ where
                 .build()
                 .unwrap()
                 .block_on(async move {
-                    let mut jhs = vec![];
+                    let mut js = JoinSet::new();
                     // wait for new task
                     while let Some(task) = rx.recv().await {
                         // spawn it in tokio runtime
-                        jhs.push(tokio::spawn(task.into_future()));
+                        js.spawn(tokio::spawn(task.into_future()));
+                        if js.len() > 1024 {
+                            let _ = js.join_next().await;
+                        }
                     }
-                    for jh in jhs.into_iter() {
-                        let _ = jh.await;
-                    }
+                    let _ = js.join_all().await;
                 });
         });
         Self {

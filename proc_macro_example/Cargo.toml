@@ -6,7 +6,7 @@ authors = ["Louis <836250617@qq.com>"]
 license = "MIT"
 
 [lib]
-# This is essencial when developing macro crates
+# This is essential when developing macro crates
 proc-macro = true
 
 [dependencies]

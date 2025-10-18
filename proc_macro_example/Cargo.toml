@@ -1,0 +1,14 @@
+[package]
+name = "proc_macro_example"
+version = "0.1.0"
+edition = "2024"
+authors = ["Louis <836250617@qq.com>"]
+license = "MIT"
+
+[lib]
+# This is essencial when developing macro crates
+proc-macro = true
+
+[dependencies]
+quote = { version = "1.0" }
+syn = { version = "2.0" }

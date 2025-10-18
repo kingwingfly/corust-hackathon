@@ -135,6 +135,8 @@ impl Borrow<str> for Baz {
 
 // > In particular Eq, Ord and Hash must be equivalent for borrowed and owned values:
 // > x.borrow() == y.borrow() should give the same result as x == y.
+//
+// You can also use my published crate named `borrow_key` to simplify this.
 
 impl Hash for Baz {
     fn hash<H: Hasher>(&self, state: &mut H) {

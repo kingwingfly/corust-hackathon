@@ -34,7 +34,9 @@
 #![allow(dead_code)]
 
 use proc_macro::TokenStream;
+// like format!, but quote! is used to format TokenStream
 use quote::quote;
+// Rust TokenStream parser based on proc_macro2
 use syn::{Data, DeriveInput, Error, Ident, Type, parse_macro_input, spanned::Spanned};
 
 /// # Example
@@ -53,28 +55,41 @@ use syn::{Data, DeriveInput, Error, Ident, Type, parse_macro_input, spanned::Spa
 ///     key: String,
 /// }
 /// ```
-#[proc_macro_derive(BorrowKey, attributes(key))]
+#[proc_macro_derive(BorrowKey, attributes(key /* used to mark key field */))] // this is need to define the proc-macro-derive
 pub fn derive_borrow_key(input: TokenStream) -> TokenStream {
+    // `parse_macro_input` can parse the token stream into syn::DeriveInput struct.
     let input = parse_macro_input!(input as DeriveInput);
-    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+    // split generics into things implemented ToTokens
+    let (
+        impl_generics, /* generic after Token![impl] */
+        ty_generics,   /* generic after ident */
+        where_clause,  /* where */
+    ) = input.generics.split_for_impl();
+    // the ident of the struct to be implemented
     let ident = input.ident;
 
+    // the key field ident, leaving it None initially
     let mut key_ident = None::<Ident>;
+    // the type to be borrowed as
     let mut key_type = None::<Type>;
 
-    match input.data {
+    match input.data /* the field in the struct */ {
         Data::Struct(data_struct) => {
+            // iterate over all fields
             for field in data_struct.fields {
+                // only handle key attribute
                 if let Some(attr) = field.attrs.iter().find(|a| a.meta.path().is_ident("key")) {
                     if key_ident.is_some() || key_type.is_some() {
+                        // key has been set, refuse to set again
                         return Error::new(
                             attr.span(),
                             "`BorrowKey`: expect exact 1 key to be specified",
                         )
-                        .to_compile_error()
-                        .into();
+                        .to_compile_error() // this is proc_macro2::TokenStream
+                        .into(); // into proc_macro::TokenStream
                     }
                     if field.ident.is_none() {
+                        // this means its tuple struct, which does not need our proc-macro
                         return Error::new(
                             field.span(),
                             "`BorrowKey`: tuple struct does not need this proc-macro",
@@ -82,14 +97,15 @@ pub fn derive_borrow_key(input: TokenStream) -> TokenStream {
                         .to_compile_error()
                         .into();
                     }
-                    key_ident = field.ident;
+                    key_ident = field.ident;    // set key ident
                     key_type = match attr.parse_args() {
                         Ok(r#type) => Some(r#type),
-                        Err(_) => Some(field.ty),
+                        Err(_) => Some(field.ty),   // if type to be borrowed as is not set, use field type directly
                     }
                 }
             }
         }
+        // return Error if not supported
         Data::Enum(data_enum) => {
             return Error::new(
                 data_enum.enum_token.span(),
@@ -98,6 +114,7 @@ pub fn derive_borrow_key(input: TokenStream) -> TokenStream {
             .to_compile_error()
             .into();
         }
+        // return Error if not supported
         Data::Union(data_union) => {
             return Error::new(
                 data_union.union_token.span(),
@@ -108,6 +125,7 @@ pub fn derive_borrow_key(input: TokenStream) -> TokenStream {
         }
     }
 
+    // check if the key is set
     if key_ident.is_none() || key_type.is_none() {
         return Error::new(
             ident.span(),
@@ -117,6 +135,8 @@ pub fn derive_borrow_key(input: TokenStream) -> TokenStream {
         .into();
     }
 
+    // use quote to format the TokenStream.
+    // The reason to format into this can be found in <https://github.com/kingwingfly/corust-hackathon/blob/dev/hashmap_but_key_ref_to_value/src/lib.rs>
     let expanded = quote! {
         impl #impl_generics ::core::borrow::Borrow<#key_type> for #ident #ty_generics #where_clause {
             fn borrow(&self) -> &#key_type {
@@ -152,5 +172,6 @@ pub fn derive_borrow_key(input: TokenStream) -> TokenStream {
 
     };
 
+    // convert from proc_macro2::TokenStream into proc_macro::TokenStream
     TokenStream::from(expanded)
 }

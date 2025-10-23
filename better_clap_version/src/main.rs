@@ -95,14 +95,14 @@ struct Cli {}
 /// run again, got `version: 0.1.0 tag: v0.1.0 ...`
 #[cfg(not(any(feature = "not_good", feature = "not_best")))]
 #[derive(Debug, Parser)]
-#[command(version = concat!(
-    "\nversion: ",
+#[command(version = const_format::formatc!(
+    "\nversion: {} tag: {}\nrustc: {} {}",
     env!("CARGO_PKG_VERSION"),
-    " tag: ",
-    env!("VERGEN_GIT_DESCRIBE"),
-    "\nrustc: ",
+    match option_env!("VERGEN_GIT_DESCRIBE") {
+        Some(git_desc) => git_desc,
+        None => "crates.io"
+    },
     env!("VERGEN_RUSTC_SEMVER"),
-    " ",
     env!("VERGEN_RUSTC_HOST_TRIPLE"),
 ))]
 struct Cli {}

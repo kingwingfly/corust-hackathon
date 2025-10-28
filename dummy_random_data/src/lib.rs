@@ -23,7 +23,7 @@ fn time_it(f: impl Fn()) {
 
 /// for loop + ThreadRng.
 ///
-/// `cargo test -p repeat_with_and_small_rng first_attempt --release -- --nocapture`
+/// `cargo test -p dummy_random_data first_attempt --release -- --nocapture`
 /// We got,
 /// ```text ignore
 /// Time cost: 18.65 s
@@ -50,7 +50,7 @@ fn first_attempt() {
 
 /// repeat_with + ThreadRng
 ///
-/// `cargo test -p repeat_with_and_small_rng second_attempt --release -- --nocapture`
+/// `cargo test -p dummy_random_data second_attempt --release -- --nocapture`
 /// We got,
 /// ```text ignore
 /// Time cost: 15.18 s
@@ -78,7 +78,7 @@ fn second_attempt() {
 ///
 /// Notice that we do not need crypto secure, we can just use `SmallRng` instead of `ThreadRng`.
 ///
-/// `cargo test -p repeat_with_and_small_rng third_attempt --release -- --nocapture`
+/// `cargo test -p dummy_random_data third_attempt --release -- --nocapture`
 /// We got,
 /// ```text ignore
 /// Time cost: 3.46 s
@@ -106,7 +106,7 @@ fn third_attempt() {
 ///
 /// We still notice `repeat_with` will hugely speed up dummy frames generating
 /// according the first and second attempt.
-/// Let's verity, `cargo test -p repeat_with_and_small_rng forth_attempt --release -- --nocapture`.
+/// Let's verify, `cargo test -p dummy_random_data fourth_attempt --release -- --nocapture`.
 /// ```text ignore
 /// Time cost: 3.57 s
 /// ```
@@ -115,7 +115,7 @@ fn third_attempt() {
 /// the time cost will become 0s, since frame is entirely optimized,
 /// which is say usage of `repeat_with` can help compiler generate better code.
 #[test]
-fn forth_attempt() {
+fn fourth_attempt() {
     use rand::{Rng as _, SeedableRng as _};
     use std::hint::black_box;
 
@@ -136,7 +136,7 @@ fn forth_attempt() {
 
 /// RngCore + SmallRng
 ///
-/// `cargo test -p repeat_with_and_small_rng fifth_attempt --release -- --nocapture`.
+/// `cargo test -p dummy_random_data fifth_attempt --release -- --nocapture`.
 /// ```text ignore
 /// Time cost: 0.47 s
 /// ```
@@ -162,7 +162,7 @@ fn fifth_attempt() {
 /// RngCore + SmallRng + **Rayon**
 ///
 /// Let's use rayon.
-/// `cargo test -p repeat_with_and_small_rng sixth_attempt --release -- --nocapture`.
+/// `cargo test -p dummy_random_data sixth_attempt --release -- --nocapture`.
 /// ```text ignore
 /// Time cost: 0.13 s
 /// ```

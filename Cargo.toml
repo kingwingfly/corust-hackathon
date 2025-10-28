@@ -9,6 +9,7 @@ members = [
     "impl_trait_for_tuple",
     "task_manager",
     "tauri_state_not_drop_bug",
-    "proc_macro_example"
+    "proc_macro_example",
+    "dummy_random_data",
 ]
 resolver = "3"

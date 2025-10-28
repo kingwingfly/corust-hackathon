@@ -8,7 +8,7 @@
 - [x] [async_fn_in_traits](async_fn_in_traits/)
 - [x] [hashmap_but_key_ref_to_value](hashmap_but_key_ref_to_value/)
 - [x] [proc_macro_example](proc_macro_example/)
-- [ ] [dummy_random_data](dummy_random_data/)
+- [x] [dummy_random_data](dummy_random_data/)
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)
 [activity details](https://rustcc.cn/article?id=8ef403de-953b-4964-93de-fc8ae9a11bc9)

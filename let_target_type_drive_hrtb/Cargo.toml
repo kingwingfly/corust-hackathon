@@ -1,0 +1,13 @@
+[package]
+name = "let_target_type_drive_hrtb"
+version = "0.1.0"
+edition = "2024"
+authors = ["Louis <836250617@qq.com>"]
+license = "MIT"
+
+[dependencies]
+trait-variant = "0.1.2"
+
+[features]
+default = []
+error = []

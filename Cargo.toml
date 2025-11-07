@@ -11,5 +11,6 @@ members = [
     "tauri_state_not_drop_bug",
     "proc_macro_example",
     "dummy_random_data",
+    "let_target_type_drive_hrtb",
 ]
 resolver = "3"

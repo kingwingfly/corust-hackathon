@@ -87,7 +87,7 @@ where
 /// ```
 ///
 /// The key point here is `one type is more general than the other`.
-/// `f` is expected to return Future which can be used with any possiable lifetime,
+/// `f` is expected to return Future which can be used with any possible lifetime,
 /// but with `as` coerced, the lifetime of `f` is inferred as some concrete `'a`.
 ///
 /// In other words, `f` is expected to be more general than that have been coerced.

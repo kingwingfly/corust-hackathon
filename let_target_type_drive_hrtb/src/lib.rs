@@ -7,7 +7,7 @@ use std::{pin::Pin, sync::Arc};
 /// However, this is generally similar to [`TransactionFunction`](https://docs.rs/goose/latest/goose/goose/type.TransactionFunction.html)
 /// in `goose`, a famous Rust load test crate.
 ///
-/// This is known HRTB (higher rank trait bound).
+/// This is known as HRTB (higher rank trait bound).
 ///
 /// It's a Box of fn, which returns pinned future, whose lifetime is expected to be at least
 /// any possible lifetime of `&str`.

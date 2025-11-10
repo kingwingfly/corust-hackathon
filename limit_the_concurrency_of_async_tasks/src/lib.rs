@@ -6,7 +6,10 @@ use futures::{
     stream::StreamExt as _,
     task::SpawnExt,
 };
-use std::sync::{Arc, Mutex, mpsc::channel};
+use std::{
+    sync::{Arc, Mutex, mpsc::channel},
+    thread,
+};
 
 /// This is the most classic implementation.
 ///
@@ -15,27 +18,31 @@ use std::sync::{Arc, Mutex, mpsc::channel};
 fn classic() {
     let (tx, rx) = channel();
     let rx = Arc::new(Mutex::new(rx));
-    let mut pool = LocalPool::new();
-    let spawner = pool.spawner();
-    (0..3/* spawn 3 workers*/).for_each(|i| {
-        let rx = rx.clone();
-        spawner
-            .spawn(async move {
-                while let Ok(j) = {
-                    rx.lock().unwrap().recv() /*scope is used to drop MutexGuard */
-                } {
-                    println!("{i} start an async task {j}");
-                    ready(()).await;
-                    println!("{i} finish an async task {j}");
-                }
-            })
-            .unwrap();
+    let jh = thread::spawn(move || {
+        let mut pool = LocalPool::new();
+        let spawner = pool.spawner();
+        (0..3/* spawn 3 workers*/).for_each(|i| {
+            let rx = rx.clone();
+            spawner
+                .spawn(async move {
+                    while let Ok(j) = {
+                        rx.lock().unwrap().recv() /*scope is used to drop MutexGuard */
+                    } {
+                        println!("{i} start an async task {j}");
+                        ready(()).await;
+                        println!("{i} finish an async task {j}");
+                    }
+                })
+                .unwrap();
+        });
+        pool.run();
     });
+
     for i in 0..10 {
         tx.send(i).unwrap();
     }
     drop(tx);
-    pool.run();
+    jh.join().unwrap();
 }
 
 // Apart from that, you can also use tokio's `JoinSet` or `Semaphore`

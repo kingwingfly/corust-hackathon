@@ -10,6 +10,7 @@
 - [x] [proc_macro_example](proc_macro_example/)
 - [x] [dummy_random_data](dummy_random_data/)
 - [x] [let_target_type_drive_HRTB](let_target_type_drive_hrtb/)
+- [x] [limit_the_concurrency_of_async_tasks](limit_the_concurrency_of_async_tasks/)
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)
 [submit website](https://annota.corust.ai)

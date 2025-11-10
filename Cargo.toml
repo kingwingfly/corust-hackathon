@@ -12,5 +12,6 @@ members = [
     "proc_macro_example",
     "dummy_random_data",
     "let_target_type_drive_hrtb",
+    "limit_the_concurrency_of_async_tasks",
 ]
 resolver = "3"

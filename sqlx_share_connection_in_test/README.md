@@ -4,7 +4,7 @@
 ```sh
 cargo test bug_test
 ```
-It ramdomly fails with the following error `PoolTimedOut`:
+It randomly fails with the following error `PoolTimedOut`:
 ```sh
 running 2 tests
 INIT ModelManager
@@ -18,7 +18,7 @@ test tests::test1 ... FAILED
 # Reason
 This is because every tokio::test runs in a separate runtime, but share the same OnceCell initialized by one of them.
 
-If the runtime which initialized the OnceCell exits and the IO resources just stop working, the left runtimes can nerver get the OnceCell.
+If the runtime which initialized the OnceCell exits and the IO resources just stop working, the left runtimes can never get the OnceCell.
 
 # Fix
 Fix in this way:
@@ -53,7 +53,7 @@ fn test() {
     })
 }
 ```
-This can ensure the all the tests share the same runtime.
+This can ensure all the tests share the same runtime.
 
 You can try:
 ```

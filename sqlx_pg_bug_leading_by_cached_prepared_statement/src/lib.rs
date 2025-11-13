@@ -32,9 +32,9 @@ struct User {
     name: String,
 }
 
-// Query the first user in table users by field.
-//
-// Notice: the value is generic, which can be i32 or i64 and so on.
+/// Query the first user in table users by field.
+///
+/// Notice: the value is generic, which can be i32 or i64 and so on.
 async fn first_by<V, T>(con: &mut PgConnection, field: impl AsRef<str>, value: V) -> Option<T>
 where
     for<'a> V: Encode<'a, Postgres> + Type<Postgres>,

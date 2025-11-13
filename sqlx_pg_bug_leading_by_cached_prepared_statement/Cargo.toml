@@ -1,0 +1,8 @@
+[package]
+name = "sqlx_pg_bug_leading_by_cached_prepared_statement"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1.48.0", features = ["full"] }
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "tls-native-tls", "postgres"] }

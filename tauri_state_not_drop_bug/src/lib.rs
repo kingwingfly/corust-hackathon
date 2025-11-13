@@ -76,7 +76,7 @@ fn test2() {
 /// according to the trait bound of F, we can know that it's impossible to get `State` dropped
 /// with useless `&Window<R>` and `&WindowEvent`.
 ///
-/// So trick is needed to make `State` dropped in the callback.
+/// So a trick is needed to make `State` dropped in the callback.
 #[test]
 fn test3() {
     use std::sync::Arc;

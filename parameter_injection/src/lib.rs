@@ -3,7 +3,7 @@
 //!
 //! Here, `dependency injection` is actually misused. The correct term is `parameter injection`.
 //!
-//! Instead of provide parameters when calling a function, parameter injection is to retrieve parameters from somewhere.
+//! Instead of providing parameters when calling a function, parameter injection is to retrieve parameters from somewhere.
 //!
 //! e.g. `iterable.map(|x| { ... })`, x is retrieved from the iterable and injected into the closure.
 //!

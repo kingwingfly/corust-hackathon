@@ -46,7 +46,7 @@ use std::{collections::HashMap, hash::Hash};
 ///
 /// # Explain
 ///
-/// Below is desugarred function signature of `HashMap::get_mut`:
+/// Below is desugared function signature of `HashMap::get_mut`:
 /// ```
 /// fn get_mut<'a>(&'a mut self, k: &Q) -> Option<&'a mut V>;
 /// ```

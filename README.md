@@ -12,6 +12,7 @@
 - [x] [let_target_type_drive_HRTB](let_target_type_drive_hrtb/)
 - [x] [limit_the_concurrency_of_async_tasks](limit_the_concurrency_of_async_tasks/)
 - [x] [sqlx_pg_bug_leading_by_cached_prepared_statement](sqlx_pg_bug_leading_by_cached_prepared_statement/)
+- [x] [sqlx_share_connection_in_test](sqlx_share_connection_in_test/)
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)
 [submit website](https://annota.corust.ai)

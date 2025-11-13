@@ -14,5 +14,6 @@ members = [
     "let_target_type_drive_hrtb",
     "limit_the_concurrency_of_async_tasks",
     "sqlx_pg_bug_leading_by_cached_prepared_statement",
+    "sqlx_share_connection_in_test",
 ]
 resolver = "3"

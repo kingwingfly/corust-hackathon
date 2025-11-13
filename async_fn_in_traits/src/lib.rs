@@ -57,7 +57,7 @@ where
 //
 // The answer can be found in this Rust Forum thread: https://users.rust-lang.org/t/question-about-async-fn-in-traits-return-type-is-send-or-not/134613
 //
-// The compiler is more smart than we think, it can infer future evaluated by `A::foo()` is Send,
+// The compiler is smarter than we think, it can infer future evaluated by `A::foo()` is Send,
 // while that of `B::foo()` is not.
 // And `f: Send` cannot ensure `f.foo()` is Send, since Rc/Cell may be used in `f.foo`.
 //

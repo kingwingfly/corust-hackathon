@@ -4,7 +4,7 @@
 //! the performance could be the bottleneck.
 //!
 //! In this example, we'll optimize the dummy data generator
-//! and finally got a 18s -> 0.13s speeding up.
+//! and finally got an 18s -> 0.13s speeding up.
 
 #![allow(dead_code)]
 

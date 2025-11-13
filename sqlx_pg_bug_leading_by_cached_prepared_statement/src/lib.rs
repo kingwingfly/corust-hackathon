@@ -7,7 +7,7 @@
 
 use sqlx::{Encode, PgConnection, Postgres, Type, postgres::PgRow, prelude::FromRow};
 
-/// Init the databse as as example
+/// Init the database as an example
 async fn init(con: &mut PgConnection) {
     // Create a table
     sqlx::query(
@@ -94,12 +94,12 @@ async fn test() {
 
 // What's the influence?
 //
-// We have to admit, `first_by` above is very convinient
+// We have to admit, `first_by` above is very convenient
 // and releases us from writing tedious function like `first_by_id`/`first_by_name`.
 //
 // However, generic value param is dangerous to some extent.
 //
-// In example above, we only established one connection for simplifting, so it fails easily.
+// In example above, we only established one connection for simplifying, so it fails easily.
 //
 // But in real production environment, we would initialize multiple connections as a Pool.
 // Each first call of `first_by` with the same field but different value types will

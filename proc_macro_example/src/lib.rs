@@ -13,7 +13,7 @@
 //! However, just knowing how to use them is always far away from enough.
 //! Without the ability to write your own, one could never fully master Rust and make maintainable Rust project.
 //!
-//! In this example, we aiming to implement a proc-macro named `BorrowKey`. (And this example has been published as `borrow_key` on cratesio)
+//! In this example, we aim to implement a proc-macro named `BorrowKey`. (And this example has been published as `borrow_key` on cratesio)
 //! This macro should allow a struct to be borrowed as a reference to one of its fields, called `key`, based on `core::borrow::Borrow`.
 //! And it should also ensure that Eq, Ord and Hash are implemented correctly according to the documentation requirements below,
 //! so that this struct can be used in `HashSet` correctly:

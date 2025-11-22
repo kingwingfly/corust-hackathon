@@ -15,5 +15,6 @@ members = [
     "limit_the_concurrency_of_async_tasks",
     "sqlx_pg_bug_leading_by_cached_prepared_statement",
     "sqlx_share_connection_between_tests",
+    "explicitly_borrow_within_an_implicitly_borrowing_pattern",
 ]
 resolver = "3"

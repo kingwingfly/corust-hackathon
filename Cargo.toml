@@ -16,5 +16,7 @@ members = [
     "sqlx_pg_bug_leading_by_cached_prepared_statement",
     "sqlx_share_connection_between_tests",
     "explicitly_borrow_within_an_implicitly_borrowing_pattern",
+    "fake_variadic",
+    "preview_doc", "doc_cfg",
 ]
 resolver = "3"

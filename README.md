@@ -14,6 +14,9 @@
 - [x] [sqlx_pg_bug_leading_by_cached_prepared_statement](sqlx_pg_bug_leading_by_cached_prepared_statement/)
 - [x] [sqlx_share_connection_in_test](sqlx_share_connection_in_test/)
 - [x] [explicitly_borrow_within_an_implicitly_borrowing_pattern](explicitly_borrow_within_an_implicitly_borrowing_pattern/)
+- [x] [fake_variadic](fake_variadic/)
+- [x] [preview_doc](preview_doc/)
+- [x] [doc_cfg](doc_cfg/)
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)
 [submit website](https://annota.corust.ai)

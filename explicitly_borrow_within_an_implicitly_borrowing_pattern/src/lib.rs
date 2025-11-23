@@ -86,6 +86,6 @@ fn anyway_worked_fix(f: &mut Foo) {
 fn best_fix(f: &mut Foo) {
     // explicitly dereference f,
     // and use `ref` and `ref mut` to express that we only want reference of fields
-    let Foo { ref a, ref mut b } = *f; // this loos better then
+    let Foo { ref a, ref mut b } = *f; // this looks better then
     *b = a.clone();
 }

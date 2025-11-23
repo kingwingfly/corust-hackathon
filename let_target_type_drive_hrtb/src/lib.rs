@@ -99,7 +99,7 @@ where
     let t = Arc::new(t);
     let f = Box::new({
         move |s: &str| -> Pin<Box<dyn Future<Output = ()> + Send + '_>> {
-            // Clone first, so that `f: Fn` instead of `f: FnOnce()`
+            // Clone first, so that `f: Fn()` instead of `f: FnOnce()`
             let t = t.clone();
             Box::pin(async move { t.f(&s).await })
         }
@@ -117,7 +117,7 @@ where
     // we claim the target type to let it drive HRTB.
     let f: FF = Box::new({
         move |s: &str| {
-            // Clone first, so that `f: Fn` instead of `f: FnOnce()`
+            // Clone first, so that `f: Fn()` instead of `f: FnOnce()`
             let t = t.clone();
             Box::pin(async move { t.f(s).await })
         }

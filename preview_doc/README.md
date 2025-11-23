@@ -14,7 +14,7 @@ cargo docs-rs -p preview_doc --example foo
 
 It's far away from enough for developers to use `cargo expand` to check if proc-macro works as expected.
 
-One may found easily run `cargo doc` won't give expected result.
+One may found easily running `cargo doc` won't give expected result.
 
 The correct solution is
 ```sh

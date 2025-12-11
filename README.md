@@ -17,6 +17,7 @@
 - [x] [fake_variadic](fake_variadic/)
 - [x] [preview_doc](preview_doc/)
 - [x] [doc_cfg](doc_cfg/)
+- [x] [incorrect_clone_derived](incorrect_clone_derived/)
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)
 [submit website](https://annota.corust.ai)

@@ -19,5 +19,6 @@ members = [
     "fake_variadic",
     "preview_doc",
     "doc_cfg",
+    "incorrect_clone_derived",
 ]
 resolver = "3"

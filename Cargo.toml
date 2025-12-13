@@ -20,5 +20,6 @@ members = [
     "preview_doc",
     "doc_cfg",
     "incorrect_clone_derived",
+    "find_zombie_thread_with_loom",
 ]
 resolver = "3"

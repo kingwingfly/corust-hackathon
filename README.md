@@ -18,6 +18,7 @@
 - [x] [preview_doc](preview_doc/)
 - [x] [doc_cfg](doc_cfg/)
 - [x] [incorrect_clone_derived](incorrect_clone_derived/)
+- [x] [find_zombie_thread_with_loom](find_zombie_thread_with_loom/)
 
 [submit url](https://wj.qq.com/s2/24113782/1a71/?wj_lang=zhs)
 [submit website](https://annota.corust.ai)

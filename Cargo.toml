@@ -21,5 +21,6 @@ members = [
     "doc_cfg",
     "incorrect_clone_derived",
     "find_zombie_thread_with_loom",
+    "tailing_file",
 ]
 resolver = "3"

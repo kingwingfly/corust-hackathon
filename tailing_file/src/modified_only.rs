@@ -1,14 +1,13 @@
 use std::{
-    collections::VecDeque,
     io,
     path::Path,
     pin::Pin,
     sync::Arc,
-    task::{Context, Poll, Waker},
+    task::{Context, Poll},
 };
 
+use futures_util::task::AtomicWaker;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
-use parking_lot::Mutex;
 use tokio::{
     fs::File,
     io::{AsyncRead, ReadBuf},
@@ -17,7 +16,7 @@ use tokio::{
 #[derive(Debug)]
 struct TailingFile {
     inner: File,
-    wakers: Arc<Mutex<VecDeque<Waker>>>,
+    wakers: Arc<AtomicWaker>,
     _watcher: RecommendedWatcher,
 }
 
@@ -32,17 +31,17 @@ impl TailingFile {
             return Err(io::ErrorKind::NotFound.into());
         }
 
-        let wakers = Arc::new(Mutex::new(VecDeque::<Waker>::new()));
+        let wakers = Arc::new(AtomicWaker::new());
 
         let mut watcher = notify::recommended_watcher({
             let wakers = wakers.clone();
             move |e: Result<notify::Event, notify::Error>| {
                 let Ok(e) = e else { return };
                 // only listen to Modify event
-                if e.kind.is_modify() {
-                    for w in wakers.lock().drain(..) {
-                        w.wake();
-                    }
+                if e.kind.is_modify()
+                    && let Some(w) = wakers.take()
+                {
+                    w.wake();
                 }
             }
         })
@@ -57,10 +56,6 @@ impl TailingFile {
             wakers,
             _watcher: watcher,
         })
-    }
-
-    fn register(&self, waker: Waker) {
-        self.wakers.lock().push_back(waker);
     }
 }
 
@@ -82,7 +77,7 @@ impl AsyncRead for TailingFile {
             Poll::Ready(Err(e)) => return Poll::Ready(Err(e)),
             Poll::Pending => {}
         }
-        this.register(cx.waker().clone());
+        this.wakers.register(cx.waker());
         Poll::Pending
     }
 }

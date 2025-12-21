@@ -1,15 +1,18 @@
+//! Source from file
+
 use std::{
-    collections::VecDeque,
     io::{self, SeekFrom},
     path::{Path, PathBuf},
     pin::Pin,
     sync::Arc,
-    task::{Context, Poll, Waker},
+    task::{Context, Poll},
 };
 
-use futures_util::future::{MaybeDone, maybe_done};
+use futures_util::{
+    future::{MaybeDone, maybe_done},
+    task::AtomicWaker,
+};
 use notify::{RecommendedWatcher, RecursiveMode, Watcher, recommended_watcher};
-use parking_lot::Mutex;
 use tokio::{
     fs::File,
     io::{AsyncRead, AsyncSeekExt, ReadBuf},
@@ -17,7 +20,7 @@ use tokio::{
 
 /// A Future to open a file.
 ///
-/// Re-open on Error.
+/// Re-open on NotFound Error and return Pending.
 struct FileFut {
     fut: Pin<Box<dyn Future<Output = Result<File, io::Error>> + Send + Sync + 'static>>,
     path: PathBuf,
@@ -41,95 +44,83 @@ impl FileFut {
 }
 
 impl Future for FileFut {
-    type Output = File;
+    type Output = io::Result<File>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this = self.get_mut();
         loop {
             match this.fut.as_mut().poll(cx) {
-                Poll::Ready(Ok(file)) => return Poll::Ready(file),
-                Poll::Ready(Err(_)) => {
-                    // return Pending and re-open on error
+                Poll::Ready(Ok(file)) => return Poll::Ready(Ok(file)),
+                Poll::Ready(Err(e)) if e.kind() == io::ErrorKind::NotFound => {
+                    // return Pending and re-open on NotFound error
                     *this = FileFut::new(&this.path);
                     return Poll::Pending;
                 }
-                Poll::Pending => {}
+                Poll::Ready(Err(e)) => return Poll::Ready(Err(e)),
+                Poll::Pending => {
+                    // loop until a result, since Modified and Created event from notify
+                    // will wake this up **only once**.
+                    // It's incorrect to return Pending after opened but before seeked.
+                    // In other words, we hope this.fut atomic.
+                }
             }
         }
     }
 }
 
-/// Kinds of interests that `poll_read` prodeced
-#[derive(Debug, PartialEq)]
-enum InterestKind {
-    Modified,
-    Created,
-}
-
-// Interest with Waker
-#[derive(Debug)]
-struct Interest {
-    kind: InterestKind,
-    waker: Waker,
-}
-
+/// A file wrapper treat EOF and NotFound as Pending
 pub struct TailingFile {
     file: MaybeDone<FileFut>,
-    // FIFO
-    interests: Arc<Mutex<VecDeque<Interest>>>,
+    waker: Arc<AtomicWaker>,
     _watcher: RecommendedWatcher,
 }
 
 impl TailingFile {
+    /// Open a file.
     pub async fn open(path: impl AsRef<Path>) -> Result<Self, io::Error> {
-        if path.as_ref().is_dir() {
+        // convert into an absolute path
+        let path = std::env::current_dir()
+            .map(|p| p.join(path.as_ref()))
+            .unwrap();
+        debug_assert!(path.is_absolute());
+
+        if path.is_dir() {
             return Err(io::ErrorKind::IsADirectory.into());
         }
-        // no more error on NotFound here
-        let interests = Arc::new(Mutex::new(VecDeque::<Interest>::new()));
+
+        let waker = Arc::new(AtomicWaker::new());
         let mut watcher = recommended_watcher({
-            let path = path.as_ref().to_path_buf();
-            let interests = interests.clone();
+            let path = path.clone();
+            let waker = waker.clone();
             move |e: Result<notify::Event, notify::Error>| {
                 let Ok(e) = e else {
                     return;
                 };
-                // condition to lock
-                if (e.kind.is_modify() || e.kind.is_create()) && e.paths.contains(&path) {
-                    let mut interests = interests.lock();
-                    for i in interests.drain(..).collect::<Vec<_>>() {
-                        if (i.kind == InterestKind::Modified && e.kind.is_modify())
-                            || (i.kind == InterestKind::Created && e.kind.is_create())
-                        {
-                            i.waker.wake();
-                        } else {
-                            // put back if not interested
-                            interests.push_back(i);
-                        }
-                    }
+                if (e.kind.is_modify() || e.kind.is_create())
+                    && e.paths.contains(&path)
+                    && let Some(w) = waker.take()
+                {
+                    w.wake();
                 }
             }
         })
-        .unwrap();
+        .unwrap(); // panic if not supported
         watcher
-            .watch(path.as_ref().parent().unwrap(), RecursiveMode::NonRecursive)
-            .unwrap();
+            .watch(
+                path.parent().unwrap(), // file has parent
+                RecursiveMode::NonRecursive,
+            )
+            .unwrap(); // panic if not supported
         Ok(TailingFile {
             file: maybe_done(FileFut::new(path)),
-            interests,
+            waker,
             _watcher: watcher,
         })
-    }
-
-    fn register(&self, kind: InterestKind, waker: Waker) {
-        let mut interests = self.interests.lock();
-        if interests.iter().all(|i| !i.waker.will_wake(&waker)) {
-            interests.push_back(Interest { kind, waker });
-        }
     }
 }
 
 impl AsyncRead for TailingFile {
+    /// Pending if EOF or NotFound. Self-wake waker in Context on OS event.
     fn poll_read(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -140,7 +131,7 @@ impl AsyncRead for TailingFile {
         loop {
             match Pin::new(&mut this.file).output_mut() {
                 // opened, try read
-                Some(file) => {
+                Some(Ok(file)) => {
                     let before = buf.filled().len();
                     match Pin::new(file).poll_read(cx, buf) {
                         Poll::Ready(Ok(())) => {
@@ -154,15 +145,20 @@ impl AsyncRead for TailingFile {
                         Poll::Pending => {}
                     }
                     // register waker and interested on file Modified event
-                    this.register(InterestKind::Modified, cx.waker().clone());
+                    this.waker.register(cx.waker());
                     return Poll::Pending;
+                }
+                // not NotFound error
+                Some(Err(_)) => {
+                    let e = Pin::new(&mut this.file).take_output().unwrap().unwrap_err();
+                    return Poll::Ready(Err(e));
                 }
                 // not open yet
                 None => match Pin::new(&mut this.file).poll(cx) {
                     Poll::Ready(()) => {}
                     Poll::Pending => {
                         // register waker and interested on file Created event
-                        this.register(InterestKind::Created, cx.waker().clone());
+                        this.waker.register(cx.waker());
                         return Poll::Pending;
                     }
                 },

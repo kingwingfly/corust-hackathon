@@ -22,5 +22,7 @@ members = [
     "incorrect_clone_derived",
     "find_zombie_thread_with_loom",
     "tailing_file",
+    "objc2_screen_capture_kit_delegate_never_called",
+    "objc2_screen_capture_kit_incorrect_frame_width",
 ]
 resolver = "3"
